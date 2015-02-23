@@ -50,6 +50,9 @@ class DnaAnalyzer:
 		# list holding headers
 		self.header = []
 		self.ps = "%"
+		self._totalBase = 0
+		self._totalMB = 0.0
+
 
 	def readFasta(self, fp):
 		"""
@@ -61,8 +64,11 @@ class DnaAnalyzer:
 		for head, seq in self.parseFasta(fp):
 			# analyzes sequence
 			self.analyzeSequence(seq)
-			# saves header
-			self.header.append(head)
+			if head == "":
+				continue 
+			else:
+				# saves header
+				self.header.append(head)
 
 
 	def parseFasta(self, fp):
@@ -132,6 +138,7 @@ class DnaAnalyzer:
 		for base in seq:
 			if base in self.nuc:
 				self.nuc[base] += 1
+			print("%s: %d " % (base, self.nuc[base]))
 
 		# convert to RNA
 		rna = self.convertDNAtoRNA(seq)
@@ -145,21 +152,24 @@ class DnaAnalyzer:
 
 	def gcContent(self):
 
-		gc = ((self.nuc["G"] + self.nuc["C"]) / (self.nuc["G"] + self.nuc["C"] + self.nuc["T"] + self.nuc["A"]))
+		gc = (float(self.nuc["G"] + self.nuc["C"]) / float(self.nuc["G"] + self.nuc["C"] + self.nuc["T"] + self.nuc["A"]))
 		gc *= 100
 		return gc
 
 
-	def getMB(self):
+	def getSeqSize(self):
+		"""
+		getSeqSize calculates total # bases 
+		and total # MB. call getSeqSize before reportOutput
+		to get up-to-date size 
 
-		totalBase = 0.0
-
+		self._totalBase is 0 upon call to getSeqSize()
+		"""
+		self._totalBase = 0
 		for base in self.nuc:
-			totalBase += self.nuc[base]
+			self._totalBase += self.nuc[base]
 
-		MB = totalBase / 1000000.00 
-
-		return MB
+		self._totalMB = float(self._totalBase) / 1000000.00 
 
 
 	def totalAA(self):
@@ -184,7 +194,7 @@ class DnaAnalyzer:
 			(float(self.aa[key])/self.totalAA()*100), 
 			self.ps, self.aa[key]))
 
-		print("\n")
+		print()
 
 
 	def reportCodon(self):
@@ -199,7 +209,23 @@ class DnaAnalyzer:
 			(float(self.codon[key])/self.totalAA()*100), self.ps, 
 			self.codon[key] ))
 		
-		print("\n")
+		print()
+
+
+	def reportOutput(self):
+
+		print (self.header[1]), 
+		self.getSeqSize()
+		print("Total Bases = %d " % self._totalBase)
+		for base in self.nuc:
+			per_yield = float(self.nuc[base] / float(self._totalBase))*100
+			print("	%s: %d nts | %.2f%s " % (base, self.nuc[base], per_yield, self.ps))
+		print("MB = %.6f " % self._totalMB)
+		print("GC content %.2f%s " % (self.gcContent(), self.ps))
+		print("*********************")
+
+		self.reportAA()
+		self.reportCodon()
 
 
 
