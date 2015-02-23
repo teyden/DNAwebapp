@@ -49,7 +49,7 @@ class DnaAnalyzer:
 
 		# list holding headers
 		self.header = []
-
+		self.ps = "%"
 
 	def readFasta(self, fp):
 		"""
@@ -143,6 +143,63 @@ class DnaAnalyzer:
 				self.aa[self.codonTable[rna[i:i+3]]] += 1    # key = rna[i:i+3]
 
 
+	def gcContent(self):
+
+		gc = ((self.nuc["G"] + self.nuc["C"]) / (self.nuc["G"] + self.nuc["C"] + self.nuc["T"] + self.nuc["A"]))
+		gc *= 100
+		return gc
+
+
+	def getMB(self):
+
+		totalBase = 0.0
+
+		for base in self.nuc:
+			totalBase += self.nuc[base]
+
+		MB = totalBase / 1000000.00 
+
+		return MB
+
+
+	def totalAA(self):
+		 
+		totalAA = 0
+
+		for aa in self.aa:
+			totalAA += self.aa[aa]
+
+		return totalAA
+
+
+	def reportAA(self):
+
+		keys = list(self.aa.keys())
+		keys.sort()
+
+		print("Amino Acid Composition")
+
+		for key in keys: 
+			print("%s : %3.2f%s %d " % (key, 
+			(float(self.aa[key])/self.totalAA()*100), 
+			self.ps, self.aa[key]))
+
+		print("\n")
+
+
+	def reportCodon(self):
+
+		keys = list(self.codon.keys())
+		keys.sort()
+
+		print("Codon Usage")
+
+		for key in keys: 
+			print("%s : %s %3.2f%s %d " % (key, self.codonTable[key],
+			(float(self.codon[key])/self.totalAA()*100), self.ps, 
+			self.codon[key] ))
+		
+		print("\n")
 
 
 
