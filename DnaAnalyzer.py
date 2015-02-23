@@ -13,7 +13,8 @@ class DnaAnalyzer:
 
 	def __init__(self):
 		
-		self.codonTable = {
+		self.codonTable = 
+		{
 		"UUU":"F", "UUC":"F", "UUA":"L", "UUG":"L",
 	    "UCU":"S", "UCC":"S", "UCA":"S", "UCG":"S",
 	    "UAU":"Y", "UAC":"Y", "UAA":"-", "UAG":"-",
