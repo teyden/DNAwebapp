@@ -78,7 +78,7 @@ class DnaAnalyzer:
 				# saves header
 				self._header.append(head)
 
-		# analyze final sequence 
+		# redirects final seq to ** analyzeSequence() ** 
 		self.analyzeSequence(seq)
 
 
